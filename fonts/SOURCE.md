@@ -1,0 +1,9 @@
+These Latin WOFF2 subsets are captured unchanged for local development. The intended display widths are supplied by the variable faces; browser selection and full publication glyph coverage remain to be checked.
+
+Instrument Sans is the unchanged Latin subset and licence captured in Carrier. Source: https://fonts.gstatic.com/s/instrumentsans/v4/pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1ZuWi3g.woff2.
+
+fraunces, retrieved 15 October 2026 from [Google Fonts](https://fonts.googleapis.com/css2?family=Fraunces%3Aopsz%2Cwght%409..144%2C100..900&display=swap). [Font bytes](https://fonts.gstatic.com/s/fraunces/v38/6NU78FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0KxC9TeP2Xz5c.woff2); [SIL Open Font License](https://raw.githubusercontent.com/google/fonts/main/ofl/fraunces/OFL.txt) retained here. SHA-256: `48282a415ec22e31beaf0a0666e6fae0c8cbddcd0b1f6e729f27c3ade8a64e43`.
+
+martian-mono, retrieved 15 October 2026 from [Google Fonts](https://fonts.googleapis.com/css2?family=Martian+Mono%3Awdth%2Cwght%4075..112.5%2C100..800&display=swap). [Font bytes](https://fonts.gstatic.com/s/martianmono/v6/2V0aKIcADoYhV6w87xrTKjsSBanIRWbh8g.woff2); [SIL Open Font License](https://raw.githubusercontent.com/google/fonts/main/ofl/martianmono/OFL.txt) retained here. SHA-256: `debf9154726c626f203b2f9f1b1aa855123326ca5b7e88527f72dbf07659dbe5`.
+
+Instrument Sans italic variable Latin WOFF2, retrieved 19 October 2026 from the [official Google Fonts stylesheet](https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@1,400..700&display=swap). [Unchanged font bytes](https://fonts.gstatic.com/s/instrumentsans/v4/pxitypc9vsFDm051Uf6KVwgkfoSbSnNPooZAN0lInHGpCWNu15GRqXp6pQ.woff2), covered by the retained Instrument Sans SIL Open Font License. Weight range 400–700; SHA-256 `d228ca3e0dab07c775322956926b1981275a0cdc79f894b3f979087d085e556c`.

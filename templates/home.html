@@ -1,0 +1,7 @@
+{% extends "chronicle/page.html" %}
+{% block head_extra %}
+{{ super() }}
+<script type="application/json" id="portrait-resources">{{ presentation.resources | json_script }}</script>
+{% endblock head_extra %}
+{% block page_mode %}home{% endblock page_mode %}
+{% block footer_treatment %}colophon{% endblock footer_treatment %}

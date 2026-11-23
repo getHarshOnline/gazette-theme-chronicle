@@ -1,0 +1,275 @@
+@use '../shared/typography';
+@use '../tokens/scss/layout';
+@use '../shared/optical';
+@use '../shared/navigation';
+@layer world {
+  @media screen {
+    :root[data-page-mode='home']:has(.character-encounter) main {
+      max-inline-size: none; padding: 0;
+    }
+  }
+  .character-encounter {
+    position: relative; isolation: isolate; display: grid;
+    grid-template-columns: minmax(0,3fr) minmax(0,4fr) minmax(0,5fr);
+    min-block-size: max(100svh,var(--layout-encounter-min-height));
+    padding: calc(var(--frame-header-height,var(--layout-sticky-chrome)) + var(--space-7)) var(--space-6) var(--space-7);
+    gap: var(--space-6); color: var(--color-ink); background: var(--color-paper);
+  }
+  .character-encounter .encounter-copy {
+    grid-column: 1; display: flex; flex-direction: column;
+    align-self: start; padding: 0; min-inline-size: 0;
+  }
+  .character-encounter .encounter-copy h1 {
+    font-size: calc(var(--type-size-display-1) * var(--layout-encounter-headline-scale));
+    line-height: var(--type-line-height-heading); margin: 0 0 var(--space-5); text-wrap: balance;
+  }
+  .character-encounter .encounter-copy > p {
+    @include typography.reading-face(); font-size: var(--type-size-body);
+    line-height: var(--type-line-height-reading); max-inline-size: var(--layout-encounter-copy-measure); margin: 0;
+  }
+  .publication-body .character-encounter .portrait-stage {
+    position: absolute; inset: 0; z-index: -1; margin: 0; overflow: clip;
+    background: transparent; inline-size: 100%; block-size: 100%; aspect-ratio: auto;
+  }
+  .portrait-stage p { position: absolute; inset: 0; margin: 0; }
+  .portrait-stage img {
+    display: block; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center;
+    filter: var(--portrait-still-filter,none);
+  }
+  .portrait-canvas { display: none; position: absolute; inset: 0; inline-size: 100%; block-size: 100%; pointer-events: none; }
+  .portrait-reveal-canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; pointer-events: none; z-index: -2; }
+  .portrait-ready .portrait-canvas { display: block; }
+  .portrait-ready .portrait-stage img { visibility: hidden; }
+  .encounter-choices {
+    grid-column: 2 / -1; align-self: end; justify-self: end;
+    display: flex; flex-wrap: nowrap; align-items: stretch; gap: var(--space-4);
+    inline-size: 100%; max-inline-size: var(--layout-container-rail); min-inline-size: 0;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    scroll-snap-type: inline proximity; scroll-padding-inline: var(--space-3);
+    overscroll-behavior-inline: contain; padding: var(--space-3);
+    @include optical.horizontal-fade($edge: var(--space-6));
+  }
+  .encounter-choices::-webkit-scrollbar { display: none; }
+  .encounter-choice {
+    position: relative; isolation: isolate; flex: 0 0 min(100%,var(--layout-encounter-choice-width)); min-inline-size: 0;
+    scroll-snap-align: start;
+    display: flex; flex-direction: column; align-items: start; gap: var(--space-3);
+    min-block-size: var(--layout-encounter-choice-min-height);
+    padding: var(--space-5); border-radius: var(--layout-encounter-choice-radius);
+    @include optical.layer(
+      $face: color-mix(in srgb,var(--color-sheet) calc(var(--material-floating-fill) * 100%),transparent),
+      $filter: blur(var(--material-encounter-choice-blur)) Saturate(var(--material-encounter-choice-saturation)),
+      $solid: var(--color-paper));
+    border: var(--stroke-hair) solid color-mix(in srgb,var(--color-ink) calc(var(--material-encounter-choice-edge) * 100%),transparent);
+    transition: transform var(--motion-encounter-choice-lift-duration) var(--motion-encounter-choice-easing),
+      border-color var(--motion-encounter-choice-material-duration) var(--easing-productive);
+  }
+  .encounter-choice :is(h2,p:not(:has(> img,> :where(picture[data-gazette-image-modes]) > img)):not(:last-child)) {
+    position: relative; z-index: 1;
+  }
+  .encounter-choice:has(> p > img,> p > :where(picture[data-gazette-image-modes]) > img,> [data-gazette-image-block]) :is(h2,p:not(:has(> img,> :where(picture[data-gazette-image-modes]) > img)):not(:last-child)) {
+    max-inline-size: calc(100% - var(--layout-encounter-choice-copy-reserve) + var(--space-5));
+  }
+  .encounter-choice h2 { font-size: var(--type-size-reading); line-height: var(--type-line-height-heading); margin: 0; }
+  .encounter-choice p { font-size: var(--type-size-meta); margin: 0; }
+  .encounter-choice > :is(p:has(> img,> :where(picture[data-gazette-image-modes]) > img),[data-gazette-image-block]) {
+    position: absolute; inset: 0; overflow: clip; border-radius: inherit; pointer-events: none;
+  }
+  .encounter-choice > [data-gazette-image-block] > p { display: contents; }
+  .encounter-choice > :is(p,[data-gazette-image-block]) img {
+    position: absolute; inset-inline-end: calc(-1 * var(--layout-encounter-choice-peek-overhang));
+    inset-block-end: var(--layout-encounter-choice-peek-bottom);
+    inline-size: var(--layout-encounter-choice-peek-size); block-size: var(--layout-encounter-choice-peek-size);
+    max-inline-size: none; object-fit: cover; border-radius: 50% 0 0 50%;
+    mask-image: radial-gradient(circle at calc(var(--material-encounter-choice-mask-centre) * 100%) 50%,
+      black calc(var(--material-encounter-choice-mask-solid) * 100%),transparent calc(var(--material-encounter-choice-mask-clear) * 100%));
+    transition: transform var(--motion-encounter-choice-peek-duration) var(--motion-encounter-choice-easing);
+  }
+  .encounter-choice > p:last-child { position: relative; z-index: 1; margin-block-start: auto; padding-block-start: var(--space-4); }
+  .encounter-choice a {
+    --control-primary-min-block-size: var(--target-project);
+    --control-primary-inset-block: var(--space-2); --control-primary-inset-inline: var(--space-4);
+    --control-primary-border: 0; --control-primary-radius: var(--space-9);
+    --control-primary-font-size: var(--type-size-meta); --control-primary-line-height: var(--type-line-height-reading);
+    --control-primary-hover-transform: scale(var(--motion-encounter-choice-action-scale));
+    --control-primary-background-duration: var(--motion-encounter-choice-material-duration);
+    --control-primary-transition-properties: background-color,transform;
+    --control-primary-background-easing: var(--easing-productive);
+    --control-primary-duration: var(--motion-encounter-choice-action-duration);
+    --control-primary-easing: var(--motion-encounter-choice-easing);
+  }
+  .encounter-choice:focus-within {
+    border-color: color-mix(in srgb,var(--color-ink) calc(var(--material-encounter-choice-held-edge) * 100%),transparent);
+  }
+  .encounter-choice:focus-within,.encounter-choice:focus-within img {
+    transition-duration: var(--motion-reduced-encounter-choice);
+  }
+  .encounter-choice:focus-within img {
+    transform: translateX(var(--motion-encounter-choice-peek-travel)) rotate(var(--motion-encounter-choice-peek-turn));
+  }
+  @media (hover: hover) {
+    .encounter-choice:hover {
+      transform: translateY(var(--motion-encounter-choice-lift));
+      border-color: color-mix(in srgb,var(--color-ink) calc(var(--material-encounter-choice-held-edge) * 100%),transparent);
+    }
+    .encounter-choice:hover img {
+      transform: translateX(var(--motion-encounter-choice-peek-travel)) rotate(var(--motion-encounter-choice-peek-turn));
+    }
+  }
+  @media (width < layout.$layout-breakpoint-wide), (aspect-ratio < 11/10) {
+    .character-encounter {
+      display: flex; flex-direction: column; gap: var(--space-5); min-block-size: 0;
+      padding: calc(var(--frame-header-height,var(--layout-sticky-chrome)) + var(--space-5)) var(--space-5) var(--space-5);
+    }
+    .character-encounter .encounter-copy { flex: none; }
+    .character-encounter .encounter-copy h1 {
+      font-size: var(--type-size-display-2); margin-block-end: var(--space-4); text-wrap: balance;
+    }
+    .publication-body .character-encounter .portrait-stage {
+      position: relative; inset: auto; flex: none; z-index: 0;
+      block-size: min(100vw,var(--layout-container-narrow));
+    }
+    .encounter-choices {
+      align-self: stretch; max-inline-size: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :root:not([data-motion='allow']) .encounter-choice,:root:not([data-motion='allow']) .encounter-choice img { transform: none; transition-duration: var(--motion-reduced-encounter-choice); }
+  }
+  :root[data-motion='reduce'] .encounter-choice,:root[data-motion='reduce'] .encounter-choice img { transform: none; transition-duration: var(--motion-reduced-encounter-choice); }
+  @media print {
+    .portrait-ready .portrait-canvas,.portrait-reveal-canvas { display: none; }
+    .character-encounter { min-block-size: 0; display: block; padding: 0; background: none; color: var(--color-ink); }
+    .character-encounter::before { display: none; }
+    .publication-body .character-encounter .portrait-stage {
+      position: relative; inset: auto; z-index: auto; block-size: auto; aspect-ratio: 16/9; margin-block: var(--space-5);
+    }
+    .character-encounter .portrait-stage img { position: static; visibility: visible; inline-size: 100%; block-size: 100%; transform: none; mask-image: none; object-position: center; filter: none; }
+    .encounter-choices { display: flex; flex-wrap: wrap; overflow: visible; }
+    .encounter-choice { min-block-size: 0; background: none; border-color: var(--color-line); backdrop-filter: none; transform: none; break-inside: avoid; }
+    .encounter-choice > :is(p:has(> img,> :where(picture[data-gazette-image-modes]) > img),[data-gazette-image-block]) { display: none; }
+    .encounter-choice:has(> p > img,> p > :where(picture[data-gazette-image-modes]) > img,> [data-gazette-image-block]) :is(h2,p:not(:has(> img,> :where(picture[data-gazette-image-modes]) > img)):not(:last-child)) { max-inline-size: none; }
+    .encounter-choice a {
+      --control-primary-inset-block: 0; --control-primary-inset-inline: 0;
+      --control-print-border: 0; --control-print-decoration: underline;
+    }
+
+  }
+}
+@layer world {
+  .frame__footer { background: var(--color-sheet); }
+}
+
+@layer world {
+  .frame__nav a:focus-visible,.publication-index a:focus-visible { box-shadow: 0 0 var(--world-illumination-emission-spread) var(--world-illumination-emission); }
+  .publication-index > li { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: baseline; gap: var(--space-3) var(--space-6); padding-block: var(--space-5); }
+  .reading-notes { background: var(--color-sheet); border-block: 0; border-inline-start: var(--stroke-hair) solid var(--color-strong-line); padding-inline: var(--space-5); }
+  .reading-notes[open] { border-inline-start-color: var(--color-signal); }
+  .reading-notes[open] > summary { color: var(--color-ink); }
+  .publication-body figure:not(.directory-art,.project-media) { --prose-caption-gap: var(--world-figure-caption-gap); margin-block: var(--world-figure-interval); }
+  @media (width < layout.$layout-breakpoint-navigation) {
+    .publication-index > li { grid-template-columns: minmax(0,1fr); gap: var(--space-2); }
+    .reading-notes { padding-inline: var(--space-4); }
+  }
+}
+
+@layer world {
+  [data-page-mode='home'] main { max-inline-size: var(--layout-field-max); }
+  .encounter { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); align-items: center; gap: var(--space-section); }
+  .encounter-copy { padding-block: var(--space-section); }
+  .encounter-copy h1 { margin-block-end: var(--space-7); max-inline-size: var(--layout-measure); }
+  .encounter-copy p { max-inline-size: var(--layout-measure); font-size: var(--type-size-h3); line-height: var(--type-line-height-reading); }
+  .publication-body .encounter-portrait { margin: 0; align-self: stretch; border-inline-start: var(--stroke-hair) solid var(--color-line); padding-inline-start: var(--space-6); }
+  .encounter-portrait p { block-size: 100%; }
+  .encounter-portrait img { display: block; inline-size: 100%; block-size: 100%; object-fit: contain; object-position: center; }
+  main:has(.encounter--room) { padding-block-start: 0; padding-inline: 0; }
+  .encounter--room,.encounter--detail { grid-template-columns: repeat(var(--layout-columns),minmax(0,1fr)); gap: 0; align-items: start; }
+  .encounter--room .encounter-copy { grid-area: 1 / 1 / 2 / 5; z-index: 1; padding: var(--space-6); color: var(--world-dark-ink); }
+  .encounter--room .encounter-copy h1 { font-size: var(--type-size-display-2); margin-block-end: var(--space-5); }
+  .encounter--room .encounter-copy p { font-size: var(--type-size-reading); }
+  .publication-body .encounter--room .encounter-portrait { grid-area: 1 / 1 / 2 / -1; border: 0; padding: 0; }
+  .encounter--room .encounter-portrait p + p { display: none; }
+  .encounter--detail .encounter-copy { grid-area: 1 / 1 / 2 / 6; z-index: 1; padding: var(--space-6); color: var(--world-dark-ink); }
+  .encounter--detail .encounter-copy h2 { font-size: var(--type-size-h2); }
+  .encounter--detail .encounter-copy p { font-size: var(--type-size-reading); }
+  .publication-body .encounter--detail .encounter-portrait { grid-area: 1 / 1 / 2 / -1; padding: 0; border: 0; }
+  .encounter--room .encounter-portrait p,.encounter--detail .encounter-portrait p { margin: 0; }
+  main:has(.encounter--room) .reflection { padding-inline: var(--space-6); }
+  .publication-body > .reflection { margin-block: var(--space-section); padding-block: var(--space-section); }
+  .reflection p { max-inline-size: var(--layout-container-rail); margin-inline: auto; @include typography.display-face(); font-size: var(--type-size-h2); line-height: var(--type-line-height-heading); }
+  .reflection p + p { margin-block-start: var(--space-5); @include typography.reading-face(); font-size: var(--type-size-reading); line-height: var(--type-line-height-reading); }
+  .pursuit-opening { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); gap: var(--space-7); align-items: end; margin-block-end: var(--space-section); }
+  .pursuit-opening h1 { max-inline-size: var(--layout-container-narrow); }
+  .pursuit-opening p { max-inline-size: var(--layout-measure); font-size: var(--type-size-body); }
+  @media (width < layout.$layout-breakpoint-navigation) {
+    .encounter { grid-template-columns: minmax(0,1fr); gap: var(--space-6); }
+    .encounter-copy { padding: 0; }
+    .encounter-copy p { font-size: var(--type-size-reading); }
+    .publication-body .encounter-portrait { max-inline-size: var(--layout-container-rail); padding: 0; border: 0; }
+    .encounter-portrait img { max-block-size: 60svh; object-position: left center; }
+    .encounter--room { grid-template-columns: minmax(0,1fr); }
+    .encounter--room .encounter-copy { grid-area: 1 / 1; padding: var(--space-5); }
+    .encounter--room .encounter-copy h1 { font-size: var(--type-size-display-2); margin-block-end: var(--space-3); }
+    .publication-body .encounter--room .encounter-portrait { grid-area: 1 / 1; max-inline-size: none; }
+    .encounter--room .encounter-portrait p:first-child { display: none; }
+    .encounter--room .encounter-portrait p + p { display: block; }
+    .encounter--room .encounter-portrait img { max-block-size: none; }
+    .encounter--detail { grid-template-columns: minmax(0,1fr); gap: 0; }
+    .encounter--detail .encounter-copy { grid-area: 1 / 1; padding: var(--space-5); color: var(--color-ink); }
+    .publication-body .encounter--detail .encounter-portrait { grid-area: 2 / 1; max-inline-size: none; }
+    .encounter--detail .encounter-portrait img { max-block-size: none; }
+    .reflection p:first-child { font-size: var(--type-size-h3); }
+    .pursuit-opening { grid-template-columns: minmax(0,1fr); gap: var(--space-5); }
+    .pursuit-opening { margin-block-end: var(--space-7); }
+  }
+}
+
+
+// Shared functional navigation; the encounter retains its authored placement.
+@layer world {
+  :root { --chronicle-chrome-ink: var(--color-ink); --chronicle-chrome-paper: var(--color-paper); --chronicle-chrome-focus: var(--color-focus); }
+  @include navigation.capsule($ink: var(--chronicle-chrome-ink), $paper: var(--chronicle-chrome-paper), $focus: var(--chronicle-chrome-focus));
+}
+
+
+@layer world {
+  :root[data-page-mode='home'] .pursuit-opening { margin-block: var(--space-7) var(--space-6); }
+  :root[data-page-mode='home'] .pursuit-opening h2 { @include typography.display-face(); font-size: var(--type-size-h2); line-height: var(--type-line-height-heading); }
+}
+
+@layer world {
+  :root[data-page-mode='home']:has(.character-encounter) {
+    @media screen { body { background: var(--color-paper); } }
+    // The portrait reveal can open under the bar; on plain paper the halo matches the paper.
+    @include navigation.film-legibility($paper: var(--chronicle-chrome-paper));
+    // The magnifier is drawn with borders, which text-shadow cannot reach.
+    .frame__header[data-navigation-mode='direct'] .shell__search-trigger .shell__icon {
+      filter: drop-shadow(0 var(--stroke-hair) var(--space-1) var(--chronicle-chrome-paper)) drop-shadow(0 var(--elevation-shell-contact-offset-y) var(--elevation-shell-contact-blur) var(--chronicle-chrome-paper));
+      @media print, (forced-colors: active) { filter: none; }
+    }
+    @media screen {
+      .frame__header[data-navigation-mode] {
+        position: fixed; inset-block-start: 0; inset-inline: 0;
+        padding-inline: var(--space-6);
+      }
+      .frame__header:not([data-navigation-mode]) {
+        padding: var(--space-4) var(--space-5); gap: var(--space-3);
+      }
+      &:has(.frame__header:not([data-navigation-mode])) .character-encounter { padding-block-start: var(--space-5); }
+
+    }
+  }
+}
+
+
+@layer world {
+  .shell__dialog { background: var(--color-sheet); border-radius: var(--radius-preview-frame); }
+  :is(.shell__close,.reading-notes-trigger) {
+    --control-font-family: var(--type-family-reading); --control-font-size: var(--type-size-meta);
+    --control-inset-inline: var(--space-4);
+    --control-secondary-ink: var(--color-ink); --control-secondary-radius: var(--space-9);
+    --control-secondary-border: transparent; --control-secondary-background: var(--color-tint);
+    --control-secondary-hover-background: var(--color-paper);
+  }
+  .shell__tenant input[type='search'] { border-radius: var(--space-9); padding-inline: var(--space-4); background: var(--color-paper); }
+}

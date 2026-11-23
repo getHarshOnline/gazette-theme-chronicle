@@ -1,0 +1,98 @@
+package = "theme:chronicle"
+namespace = "chronicle"
+templates = "templates"
+render = { page = "page.html", alias = "alias.html", graph = "graph.html", not_found = "not-found.html", social_card = { template = "social-card.html", resource_requirements = ["stylesheet:social-card", "module:social-card-media"], width = 1200, height = 630, media_selector = '.portrait-stage img', media_kind = "image" } }
+browser_theme_colors = { light = "#f4eee2", dark = "#271c12" }
+resource_requirements = ["stylesheet:world-tokens", "font:reading", "font:reading-italic", "font:system", "font:display", "stylesheet:portrait-source", "stylesheet:world"]
+
+[[dependencies]]
+package = "theme:base"
+
+[[resources]]
+id = "stylesheet:world-tokens"
+inputs = ["tokens/world.css"]
+build = { kind = "stylesheet", entry = "tokens/world.css" }
+
+[[resources]]
+id = "stylesheet:world"
+inputs = ["styles/world.scss", "shared/_typography.scss", "shared/_navigation.scss", "shared/_optical.scss", "tokens/scss/_layout.scss"]
+build = { kind = "stylesheet", entry = "styles/world.scss" }
+
+[[resources]]
+id = "font:reading-italic"
+inputs = ["instrument-sans-italic-latin.woff2"]
+build = { kind = "woff2-font", entry = "instrument-sans-italic-latin.woff2" }
+
+[[resources]]
+id = "font:reading"
+inputs = ["instrument-sans-latin.woff2"]
+build = { kind = "woff2-font", entry = "instrument-sans-latin.woff2" }
+
+[[resources]]
+id = "font:system"
+inputs = ["martian-mono-latin.woff2"]
+build = { kind = "woff2-font", entry = "martian-mono-latin.woff2" }
+
+[[resources]]
+id = "font:display"
+inputs = ["fraunces-latin.woff2"]
+build = { kind = "woff2-font", entry = "fraunces-latin.woff2" }
+
+[components.encounter]
+template = "components/encounter.html"
+arguments = { type = "object", additionalProperties = false, properties = { treatment = { type = "string", enum = ["portrait", "room", "detail"], description = "Use the portrait composition by default, text over a room view, or text beside a detail view." } } }
+
+[components.encounter-copy]
+template = "components/encounter-copy.html"
+arguments = { type = "object", additionalProperties = false }
+
+[components.encounter-portrait]
+template = "components/encounter-portrait.html"
+arguments = { type = "object", additionalProperties = false }
+
+[components.reflection]
+template = "components/reflection.html"
+arguments = { type = "object", additionalProperties = false }
+
+
+
+
+
+[components.pursuit-opening]
+template = "components/pursuit-opening.html"
+arguments = { type = "object", additionalProperties = false }
+
+
+[components.character-encounter]
+template = "components/character-encounter.html"
+arguments = { type = "object", additionalProperties = false }
+[components.character-encounter.interaction]
+module = "module:character-encounter"
+export = "mount"
+mount = "load"
+
+[components.portrait-stage]
+template = "components/portrait-stage.html"
+arguments = { type = "object", additionalProperties = false }
+
+[[resources]]
+id = "module:character-encounter"
+inputs = ["scripts/character-encounter.js", "shared/portrait.mjs"]
+build = { kind = "browser-module", entry = "scripts/character-encounter.js", imports = { "@base/continuous-portrait" = "module:continuous-portrait" } }
+
+[components.encounter-choices]
+template = "components/encounter-choices.html"
+arguments = { type = "object", additionalProperties = false }
+
+[components.encounter-choice]
+template = "components/encounter-choice.html"
+arguments = { type = "object", additionalProperties = false }
+
+[[resources]]
+id = "stylesheet:portrait-source"
+inputs = ["shared/portrait.css"]
+build = { kind = "stylesheet", entry = "shared/portrait.css" }
+
+[chrome.regions]
+"base:theme-credit" = "Chronicle theme"
+"base:theme-repository" = "https://github.com/getHarshOnline/gazette-theme-chronicle"
